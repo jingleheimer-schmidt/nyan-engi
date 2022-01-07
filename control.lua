@@ -49,7 +49,7 @@ script.on_event(defines.events.on_player_changed_position, function(event)
   if sprite or light then
     player = game.get_player(player_index)
   else
-    -- return
+    return
   end
   local length = tonumber(settings.get_player_settings(player_index)["nyan-rainbow-length"].value)
   local scale = tonumber(settings.get_player_settings(player_index)["nyan-rainbow-scale"].value)
@@ -81,22 +81,22 @@ script.on_event(defines.events.on_player_changed_position, function(event)
     }
     rendering.bring_to_front(light)
   end
-  if not global.rainbows then
-    global.rainbows = {}
-  end
-  if not global.rainbows[player_index] then
-    global.rainbows[player_index] = {}
-  end
-  table.insert(global.rainbows[player_index], {
-    sprite = sprite,
-    light = light,
-    tick_to_die = event.tick + length,
-    size = scale * length,
-    id = sprite or light,
-    tick = event.tick,
-    player_index = player_index,
-    visible = {sprite = false, light = false}
-  })
+  -- if not global.rainbows then
+  --   global.rainbows = {}
+  -- end
+  -- if not global.rainbows[player_index] then
+  --   global.rainbows[player_index] = {}
+  -- end
+  -- table.insert(global.rainbows[player_index], {
+  --   sprite = sprite,
+  --   light = light,
+  --   tick_to_die = event.tick + length,
+  --   size = scale * length,
+  --   id = sprite or light,
+  --   tick = event.tick,
+  --   player_index = player_index,
+  --   visible = {sprite = false, light = false}
+  -- })
 
   ------------- trying something new beyond this point for this function -------------------
   if not global.sprites then
