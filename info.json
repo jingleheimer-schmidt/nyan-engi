@@ -1,0 +1,13 @@
+{
+  "name": "nyan-engi",
+  "version": "0.0.1",
+  "title": "Nyan Engi",
+  "author": "asher_sky",
+  "contact": "",
+  "homepage": "",
+  "description": "Nyanyanyanyanyanyanya!",
+  "factorio_version": "1.1",
+  "dependencies": [
+	"base"
+	]
+}
