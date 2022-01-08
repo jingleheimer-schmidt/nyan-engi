@@ -37,7 +37,7 @@ function make_rainbow(rainbow)
     g = math.sin(frequency*((game_tick)+(index*created_tick))+(2*math.pi/3))*127+128,
     b = math.sin(frequency*((game_tick)+(index*created_tick))+(4*math.pi/3))*127+128,
     -- a = pallette[settings.get_player_settings(index)["nyan-rainbow-palette"].value],
-    a = 1,
+    a = 255,
   }
   return rainbow_color
 end
@@ -66,7 +66,7 @@ script.on_event(defines.events.on_player_changed_position, function(event)
       -- visible = false,
       time_to_live = length,
     }
-    rendering.bring_to_front(sprite)
+    -- rendering.bring_to_front(sprite)
   end
   if light then
     light = rendering.draw_light{
@@ -80,7 +80,7 @@ script.on_event(defines.events.on_player_changed_position, function(event)
       -- visible = false,
       time_to_live = length,
     }
-    rendering.bring_to_front(light)
+    -- rendering.bring_to_front(light)
   end
   -- if not global.rainbows then
   --   global.rainbows = {}
