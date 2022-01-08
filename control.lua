@@ -115,7 +115,7 @@ script.on_event(defines.events.on_player_changed_position, function(event)
       tick = event.tick,
       player_index = player_index,
       scale = scale,
-      visible = {sprite = false, light = false}
+      -- visible = {sprite = false, light = false}
     }
     global.sprites[sprite] = sprite_data
     local rainbow_color = make_rainbow(sprite_data)
@@ -133,7 +133,7 @@ script.on_event(defines.events.on_player_changed_position, function(event)
       tick = event.tick,
       player_index = player_index,
       scale = scale * 1.5,
-      visible = {sprite = false, light = false}
+      -- visible = {sprite = false, light = false}
     }
     global.lights[light] = light_data
     local rainbow_color = make_rainbow(light_data)
