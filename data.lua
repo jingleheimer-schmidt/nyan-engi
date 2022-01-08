@@ -6,7 +6,7 @@ local nyan_sprite = {
   priority = "high",
   width = 820,
   height = 826,
-  scale = 1/16,
+  scale = 1/24,
 
 }
 
