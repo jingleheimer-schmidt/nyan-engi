@@ -98,47 +98,41 @@ script.on_event(defines.events.on_player_changed_position, function(event)
   -- })
 
   ------------- trying something new beyond this point for this function -------------------
-  if not global.sprites then
-    global.sprites = {}
-  end
-  -- if not global.sprites[sprite] then
-  --   global.sprites[sprite] = {}
-  -- end
-  global.sprites[sprite] = {
-    sprite = sprite,
-    -- light = light,
-    tick_to_die = event.tick + length,
-    size = scale * length,
-    id = sprite or light,
-    tick = event.tick,
-    player_index = player_index,
-    scale = scale,
-    visible = {sprite = false, light = false}
-  }
-  if not global.lights then
-    global.lights = {}
-  end
-  -- if not global.lights[light] then
-  --   global.lights[light] = {}
-  -- end
-  global.lights[light] = {
-    -- sprite = sprite,
-    light = light,
-    tick_to_die = event.tick + length,
-    size = scale * length,
-    id = sprite or light,
-    tick = event.tick,
-    player_index = player_index,
-    scale = scale * 1.5,
-    visible = {sprite = false, light = false}
-  }
-  if light then
-    local rainbow_color = make_rainbow(global.lights[light])
-    rendering.set_color(light, rainbow_color)
-  end
   if sprite then
-    local rainbow_color = make_rainbow(global.sprites[sprite])
+    if not global.sprites then
+      global.sprites = {}
+    end
+    local sprite_data = {
+      sprite = sprite,
+      tick_to_die = event.tick + length,
+      size = scale * length,
+      id = sprite or light,
+      tick = event.tick,
+      player_index = player_index,
+      scale = scale,
+      visible = {sprite = false, light = false}
+    }
+    global.sprites[sprite] = sprite_data
+    local rainbow_color = make_rainbow(sprite_data)
     rendering.set_color(sprite, rainbow_color)
+  end
+  if light then
+    if not global.lights then
+      global.lights = {}
+    end
+    local light_data = {
+      light = light,
+      tick_to_die = event.tick + length,
+      size = scale * length,
+      id = sprite or light,
+      tick = event.tick,
+      player_index = player_index,
+      scale = scale * 1.5,
+      visible = {sprite = false, light = false}
+    }
+    global.lights[light] = light_data
+    local rainbow_color = make_rainbow(light_data)
+    rendering.set_color(light, rainbow_color)
   end
 end)
 
@@ -215,10 +209,10 @@ script.on_event(defines.events.on_tick, function()
         rendering.set_x_scale(sprite, sprite_scale)
         rendering.set_y_scale(sprite, sprite_scale)
         rendering.set_color(sprite, rainbow_color)
-        if not rainbow.visible.sprite then
-          rendering.set_visible(rainbow.sprite, true)
-          global.sprites[id].visible.sprite = true
-        end
+        -- if not rainbow.visible.sprite then
+        --   rendering.set_visible(rainbow.sprite, true)
+        --   global.sprites[id].visible.sprite = true
+        -- end
         global.sprites[id].size = rainbow.size - 1
       end
     else rainbow = global.lights[id]
@@ -238,10 +232,10 @@ script.on_event(defines.events.on_tick, function()
           -- rendering.set_scale(light, (light_scale - light_scale/size))
           rendering.set_scale(light, light_scale)
           rendering.set_color(light, rainbow_color)
-          if not rainbow.visible.light then
-            rendering.set_visible(rainbow.light, true)
-            global.lights[id].visible.light = true
-          end
+          -- if not rainbow.visible.light then
+          --   rendering.set_visible(rainbow.light, true)
+          --   global.lights[id].visible.light = true
+          -- end
           global.lights[id].size = rainbow.size - 1
         end
       end
