@@ -9,13 +9,13 @@ local speeds = {
   veryfast = 0.200,
 }
 
-local pallette = {
-  pastel = 1,
-  light = 64,
-  default = 128,
-  vibrant = 192,
-  deep = 255,
-}
+-- local pallette = {
+--   pastel = 1,
+--   light = 64,
+--   default = 128,
+--   vibrant = 192,
+--   deep = 255,
+-- }
 
 function make_rainbow(rainbow)
   local index = rainbow.player_index
@@ -32,14 +32,17 @@ function make_rainbow(rainbow)
   if settings.get_player_settings(index)["nyan-rainbow-sync"].value == true then
     created_tick = index
   end
-  local rainbow_color = {
-    r = math.sin(frequency*((game_tick)+(index*created_tick))+(0*math.pi/3))*127+128,
-    g = math.sin(frequency*((game_tick)+(index*created_tick))+(2*math.pi/3))*127+128,
-    b = math.sin(frequency*((game_tick)+(index*created_tick))+(4*math.pi/3))*127+128,
+  local pi_3 = math.pi/3
+  local modifier = (game_tick)+(index*created_tick)
+  -- local rainbow_color = {
+  return {
+    r = math.sin(frequency*(modifier)+(0*pi_3))*127+128,
+    g = math.sin(frequency*(modifier)+(2*pi_3))*127+128,
+    b = math.sin(frequency*(modifier)+(4*pi_3))*127+128,
     -- a = pallette[settings.get_player_settings(index)["nyan-rainbow-palette"].value],
     a = 255,
   }
-  return rainbow_color
+  -- return rainbow_color
 end
 
 script.on_event(defines.events.on_player_changed_position, function(event)
