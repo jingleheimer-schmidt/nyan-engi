@@ -9,13 +9,13 @@ local speeds = {
   veryfast = 0.200,
 }
 
--- local pallette = {
---   pastel = 1,
---   light = 64,
---   default = 128,
---   vibrant = 192,
---   deep = 255,
--- }
+local pallette = {
+  pastel = {amplitude = 55, center = 200},
+  light = {amplitude = 66, center = 160},
+  default = {amplitude = 99, center = 99},
+  vibrant = {amplitude = 77, center = 77},
+  deep = {amplitude = 55, center = 55},
+}
 
 function make_rainbow(rainbow)
   local index = rainbow.player_index
@@ -34,11 +34,14 @@ function make_rainbow(rainbow)
   end
   local pi_3 = math.pi/3
   local modifier = (game_tick)+(index*created_tick)
+  local palette_key = settings.get_player_settings(index)["nyan-rainbow-palette"].value
+  local amplitude = pallette[palette_key].amplitude
+  local center = pallette[palette_key].center
   -- local rainbow_color = {
   return {
-    r = math.sin(frequency*(modifier)+(0*pi_3))*127+128,
-    g = math.sin(frequency*(modifier)+(2*pi_3))*127+128,
-    b = math.sin(frequency*(modifier)+(4*pi_3))*127+128,
+    r = math.sin(frequency*(modifier)+(0*pi_3))*amplitude+center,
+    g = math.sin(frequency*(modifier)+(2*pi_3))*amplitude+center,
+    b = math.sin(frequency*(modifier)+(4*pi_3))*amplitude+center,
     -- a = pallette[settings.get_player_settings(index)["nyan-rainbow-palette"].value],
     a = 255,
   }

@@ -13,19 +13,19 @@ local rainbowSpeedSetting = {
   }
 }
 
--- local rainbowPaletteSetting = {
---   type = "string-setting",
---   name = "nyan-rainbow-palette",
---   setting_type = "runtime-per-user",
---   default_value = "default",
---   allowed_values = {
---     "pastel",
---     "light",
---     "default",
---     "vibrant",
---     "deep"
---   }
--- }
+local rainbowPaletteSetting = {
+  type = "string-setting",
+  name = "nyan-rainbow-palette",
+  setting_type = "runtime-per-user",
+  default_value = "default",
+  allowed_values = {
+    "pastel",
+    "light",
+    "default",
+    "vibrant",
+    "deep"
+  }
+}
 
 local rainbowTypeSetting = {
   type = "bool-setting",
@@ -40,7 +40,7 @@ local rainbowLengthSetting = {
   setting_type = "runtime-per-user",
   default_value = "120",
   allowed_values = {
-    "15",
+    "10",
     "30",
     "60",
     "90",
@@ -89,7 +89,7 @@ local rainbowColorSetting = {
 
 data:extend({
   rainbowSpeedSetting,
-  -- rainbowPaletteSetting,
+  rainbowPaletteSetting,
   rainbowTypeSetting,
   rainbowLengthSetting,
   rainbowScaleSetting,
