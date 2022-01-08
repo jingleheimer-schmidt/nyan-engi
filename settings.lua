@@ -13,19 +13,19 @@ local rainbowSpeedSetting = {
   }
 }
 
-local rainbowPaletteSetting = {
-  type = "string-setting",
-  name = "nyan-rainbow-palette",
-  setting_type = "runtime-per-user",
-  default_value = "default",
-  allowed_values = {
-    "pastel",
-    "light",
-    "default",
-    "vibrant",
-    "deep"
-  }
-}
+-- local rainbowPaletteSetting = {
+--   type = "string-setting",
+--   name = "nyan-rainbow-palette",
+--   setting_type = "runtime-per-user",
+--   default_value = "default",
+--   allowed_values = {
+--     "pastel",
+--     "light",
+--     "default",
+--     "vibrant",
+--     "deep"
+--   }
+-- }
 
 local rainbowTypeSetting = {
   type = "bool-setting",

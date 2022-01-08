@@ -36,7 +36,8 @@ function make_rainbow(rainbow)
     r = math.sin(frequency*((game_tick)+(index*created_tick))+(0*math.pi/3))*127+128,
     g = math.sin(frequency*((game_tick)+(index*created_tick))+(2*math.pi/3))*127+128,
     b = math.sin(frequency*((game_tick)+(index*created_tick))+(4*math.pi/3))*127+128,
-    a = pallette[settings.get_player_settings(index)["nyan-rainbow-palette"].value],
+    -- a = pallette[settings.get_player_settings(index)["nyan-rainbow-palette"].value],
+    a = 1,
   }
   return rainbow_color
 end
