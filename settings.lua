@@ -89,7 +89,7 @@ local rainbowColorSetting = {
 
 data:extend({
   rainbowSpeedSetting,
-  rainbowPaletteSetting,
+  -- rainbowPaletteSetting,
   rainbowTypeSetting,
   rainbowLengthSetting,
   rainbowScaleSetting,
