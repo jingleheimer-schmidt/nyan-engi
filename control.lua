@@ -24,13 +24,13 @@ function make_rainbow(rainbow)
   local game_tick = game.tick
   local frequency = 0.050
   local rainbow_speed = settings.get_player_settings(index)["nyan-rainbow-speed"].value
-  if rainbow_speed == "off" then
-    return false
-  else
+  -- if rainbow_speed == "off" then
+  --   return false
+  -- else
     frequency = speeds[rainbow_speed]
-  end
+  -- end
   if settings.get_player_settings(index)["nyan-rainbow-sync"].value == true then
-    uuid = 0
+    created_tick = index
   end
   local rainbow_color = {
     r = math.sin(frequency*((game_tick)+(index*created_tick))+(0*math.pi/3))*127+128,
@@ -199,7 +199,7 @@ script.on_event(defines.events.on_tick, function()
       else
         -- rainbow.tick = game.tick
         local rainbow_color = make_rainbow(rainbow)
-        if not rainbow_color then return end
+        -- if not rainbow_color then return end
         local sprite = rainbow.sprite
         local size = rainbow.size
         -- local sprite_scale = rendering.get_x_scale(sprite)
@@ -224,7 +224,7 @@ script.on_event(defines.events.on_tick, function()
         else
           -- rainbow.tick = game.tick
           local rainbow_color = make_rainbow(rainbow)
-          if not rainbow_color then return end
+          -- if not rainbow_color then return end
           local light = rainbow.light
           local size = rainbow.size
           -- local light_scale = rendering.get_scale(light)

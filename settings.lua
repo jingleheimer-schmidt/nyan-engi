@@ -4,7 +4,7 @@ local rainbowSpeedSetting = {
   setting_type = "runtime-per-user",
   default_value = "default",
   allowed_values = {
-    "off",
+    -- "off",
     "veryslow",
     "slow",
     "default",
