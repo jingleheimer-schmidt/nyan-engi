@@ -9,7 +9,7 @@ local speeds = {
   veryfast = 0.200,
 }
 
-local pallette = {
+local palette = {
   light = {amplitude = 8, center = 246},            -- light
   pastel = {amplitude = 55, center = 200},          -- pastel <3
   default = {amplitude = 127.5, center = 127.5},    -- default (nyan)
@@ -28,8 +28,8 @@ function make_rainbow(rainbow, game_tick, settings)
   local pi_3 = math.pi/3
   local modifier = (game_tick)+(index*created_tick)
   local palette_key = player_settings["nyan-rainbow-palette"]
-  local amplitude = pallette[palette_key].amplitude
-  local center = pallette[palette_key].center
+  local amplitude = palette[palette_key].amplitude
+  local center = palette[palette_key].center
   return {
     r = math.sin(frequency*(modifier)+(0*pi_3))*amplitude+center,
     g = math.sin(frequency*(modifier)+(2*pi_3))*amplitude+center,
@@ -69,8 +69,6 @@ end)
 script.on_configuration_changed(function()
   initialize_settings()
 end)
-
-
 
 script.on_event(defines.events.on_player_changed_position, function(event)
   local player_index = event.player_index
