@@ -4,7 +4,6 @@ local rainbowSpeedSetting = {
   setting_type = "runtime-per-user",
   default_value = "default",
   allowed_values = {
-    -- "off",
     "veryslow",
     "slow",
     "default",
@@ -40,7 +39,7 @@ local rainbowLengthSetting = {
   setting_type = "runtime-per-user",
   default_value = "120",
   allowed_values = {
-    "10",
+    "15",
     "30",
     "60",
     "90",
@@ -58,19 +57,15 @@ local rainbowScaleSetting = {
   setting_type = "runtime-per-user",
   default_value = "5",
   allowed_values = {
-    -- "0.25",
-    -- "0.5",
     "1",
-    -- "1.5",
     "2",
     "3",
     "4",
     "5",
     "6",
     "8",
-    "10",
-    "15",
-    -- "20"
+    "11",
+    "20",
   }
 }
 
@@ -78,7 +73,7 @@ local rainbowGlowSetting = {
   type = "bool-setting",
   name = "nyan-rainbow-glow",
   setting_type = "runtime-per-user",
-  default_value = false
+  default_value = true
 }
 local rainbowColorSetting = {
   type = "bool-setting",
