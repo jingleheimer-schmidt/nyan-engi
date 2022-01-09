@@ -82,11 +82,12 @@ script.on_event(defines.events.on_player_changed_position, function(event)
       -- id = sprite or light,
       tick = event.tick,
       player_index = player_index,
-      scale = scale,
+      -- scale = scale,
       -- visible = {sprite = false, light = false}
     }
     global.sprites[sprite] = sprite_data
     local rainbow_color = make_rainbow(sprite_data)
+    -- local rainbow_color = {1,1,1,1}
     rendering.set_color(sprite, rainbow_color)
     -- rendering.bring_to_front(sprite)
   end
@@ -112,11 +113,12 @@ script.on_event(defines.events.on_player_changed_position, function(event)
       -- id = sprite or light,
       tick = event.tick,
       player_index = player_index,
-      scale = scale * 1.5,
+      -- scale = scale * 1.5,
       -- visible = {sprite = false, light = false}
     }
     global.lights[light] = light_data
     local rainbow_color = make_rainbow(light_data)
+    -- local rainbow_color = {1,1,1,1}
     rendering.set_color(light, rainbow_color)
   -- end
     -- rendering.bring_to_front(light)
@@ -206,23 +208,27 @@ script.on_event(defines.events.on_tick, function()
         end
       else
         local rainbow_color = make_rainbow(rainbow)
-        local size = rainbow.size
-        -- local sprite_scale = rendering.get_x_scale(sprite)
-        local scale = rainbow.scale
-        scale = scale - scale / size
+        -- local rainbow_color = {1,1,1,1}
+        -- local size = rainbow.size
+        -- local scale = rainbow.scale
+        -- scale = scale - scale / size
         -- rendering.set_x_scale(sprite, (sprite_scale - sprite_scale / size))
         -- rendering.set_y_scale(sprite, (sprite_scale - sprite_scale / size))
         if sprite then
-          rendering.set_x_scale(sprite, scale)
-          rendering.set_y_scale(sprite, scale)
+          -- local scale = rendering.get_x_scale(sprite)
+          -- scale = scale - scale / size
+          -- rendering.set_x_scale(sprite, scale)
+          -- rendering.set_y_scale(sprite, scale)
           rendering.set_color(sprite, rainbow_color)
-          global.sprites[id].scale = scale
-          global.sprites[id].size = rainbow.size - 1
+          -- global.sprites[id].scale = scale
+          -- global.sprites[id].size = rainbow.size - 1
         elseif light then
-          rendering.set_scale(light, scale)
+          -- local scale = rendering.get_scale(light)
+          -- scale = scale - scale / size
+          -- rendering.set_scale(light, scale)
           rendering.set_color(light, rainbow_color)
-          global.lights[id].scale = scale
-          global.lights[id].size = rainbow.size - 1
+          -- global.lights[id].scale = scale
+          -- global.lights[id].size = rainbow.size - 1
         end
         -- if not rainbow.visible.sprite then
         --   rendering.set_visible(rainbow.sprite, true)
