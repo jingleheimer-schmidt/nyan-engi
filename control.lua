@@ -11,8 +11,8 @@ local speeds = {
 
 local pallette = {
   pastel = {amplitude = 55, center = 200},
-  light = {amplitude = 66, center = 160},
-  default = {amplitude = 99, center = 99},
+  light = {amplitude = 66, center = 166},
+  default = {amplitude = 127, center = 127},
   vibrant = {amplitude = 77, center = 77},
   deep = {amplitude = 55, center = 55},
 }
@@ -72,6 +72,23 @@ script.on_event(defines.events.on_player_changed_position, function(event)
       -- visible = false,
       time_to_live = length,
     }
+    if not global.sprites_and_lights then
+      global.sprites_and_lights = {}
+    end
+    local sprite_data = {
+      sprite = sprite,
+      tick_to_die = event.tick + length,
+      size = scale * length,
+      -- id = sprite or light,
+      tick = event.tick,
+      player_index = player_index,
+      scale = scale,
+      -- type = "sprite",
+      -- visible = {sprite = false, light = false}
+    }
+    global.sprites_and_lights[sprite] = sprite_data
+    local rainbow_color = make_rainbow(sprite_data)
+    rendering.set_color(sprite, rainbow_color)
     -- rendering.bring_to_front(sprite)
   end
   if light then
@@ -86,6 +103,23 @@ script.on_event(defines.events.on_player_changed_position, function(event)
       -- visible = false,
       time_to_live = length,
     }
+    if not global.sprites_and_lights then
+      global.sprites_and_lights = {}
+    end
+    local light_data = {
+      light = light,
+      tick_to_die = event.tick + length,
+      size = scale * length,
+      -- id = sprite or light,
+      tick = event.tick,
+      player_index = player_index,
+      scale = scale * 1.5,
+      -- type = "light",
+      -- visible = {sprite = false, light = false}
+    }
+    global.sprites_and_lights[light] = light_data
+    local rainbow_color = make_rainbow(light_data)
+    rendering.set_color(light, rainbow_color)
     -- rendering.bring_to_front(light)
   end
   -- if not global.rainbows then
@@ -104,44 +138,6 @@ script.on_event(defines.events.on_player_changed_position, function(event)
   --   player_index = player_index,
   --   visible = {sprite = false, light = false}
   -- })
-
-  ------------- trying something new beyond this point for this function -------------------
-  if sprite then
-    if not global.sprites then
-      global.sprites = {}
-    end
-    local sprite_data = {
-      sprite = sprite,
-      tick_to_die = event.tick + length,
-      size = scale * length,
-      -- id = sprite or light,
-      tick = event.tick,
-      player_index = player_index,
-      scale = scale,
-      -- visible = {sprite = false, light = false}
-    }
-    global.sprites[sprite] = sprite_data
-    local rainbow_color = make_rainbow(sprite_data)
-    rendering.set_color(sprite, rainbow_color)
-  end
-  if light then
-    if not global.lights then
-      global.lights = {}
-    end
-    local light_data = {
-      light = light,
-      tick_to_die = event.tick + length,
-      size = scale * length,
-      -- id = sprite or light,
-      tick = event.tick,
-      player_index = player_index,
-      scale = scale * 1.5,
-      -- visible = {sprite = false, light = false}
-    }
-    global.lights[light] = light_data
-    local rainbow_color = make_rainbow(light_data)
-    rendering.set_color(light, rainbow_color)
-  end
 end)
 
 script.on_event(defines.events.on_tick, function()
@@ -198,55 +194,61 @@ script.on_event(defines.events.on_tick, function()
     -- if global.sprites and global.sprites[id] then
     --   rainbow = global.sprites[id]
     -- end
-    local rainbow = global.sprites[id]
+    local rainbow = global.sprites_and_lights[id]
     if rainbow then
       if rainbow.tick_to_die <= game.tick then
-        global.sprites[id] = nil
+        global.sprites_and_lights[id] = nil
       else
         -- rainbow.tick = game.tick
         local rainbow_color = make_rainbow(rainbow)
         -- if not rainbow_color then return end
-        local sprite = rainbow.sprite
+        local sprite_or_light = rainbow.sprite or rainbow.light
+        local light = rainbow.light
         local size = rainbow.size
         -- local sprite_scale = rendering.get_x_scale(sprite)
-        local sprite_scale = rainbow.scale
-        sprite_scale = sprite_scale - sprite_scale / size
-        global.sprites[id].scale = sprite_scale
+        local scale = rainbow.scale
+        scale = scale - scale / size
+        global.sprites_and_lights[id].scale = scale
         -- rendering.set_x_scale(sprite, (sprite_scale - sprite_scale / size))
         -- rendering.set_y_scale(sprite, (sprite_scale - sprite_scale / size))
-        rendering.set_x_scale(sprite, sprite_scale)
-        rendering.set_y_scale(sprite, sprite_scale)
-        rendering.set_color(sprite, rainbow_color)
+        if rainbow.sprite then
+          rendering.set_x_scale(sprite_or_light, scale)
+          rendering.set_y_scale(sprite_or_light, scale)
+          rendering.set_color(sprite_or_light, rainbow_color)
+        elseif rainbow.light then
+          rendering.set_scale(sprite_or_light, scale)
+          rendering.set_color(sprite_or_light, rainbow_color)
+        end
         -- if not rainbow.visible.sprite then
         --   rendering.set_visible(rainbow.sprite, true)
         --   global.sprites[id].visible.sprite = true
         -- end
-        global.sprites[id].size = rainbow.size - 1
+        global.sprites_and_lights[id].size = rainbow.size - 1
       end
-    else rainbow = global.lights[id]
-      if rainbow then
-        if rainbow.tick_to_die <= game.tick then
-          global.lights[id] = nil
-        else
-          -- rainbow.tick = game.tick
-          local rainbow_color = make_rainbow(rainbow)
-          -- if not rainbow_color then return end
-          local light = rainbow.light
-          local size = rainbow.size
-          -- local light_scale = rendering.get_scale(light)
-          local light_scale = rainbow.scale
-          light_scale = light_scale - light_scale/size
-          global.lights[id].scale = light_scale
-          -- rendering.set_scale(light, (light_scale - light_scale/size))
-          rendering.set_scale(light, light_scale)
-          rendering.set_color(light, rainbow_color)
-          -- if not rainbow.visible.light then
-          --   rendering.set_visible(rainbow.light, true)
-          --   global.lights[id].visible.light = true
-          -- end
-          global.lights[id].size = rainbow.size - 1
-        end
-      end
+    -- else rainbow = global.sprites_and_lights[id]
+    --   if rainbow then
+    --     if rainbow.tick_to_die <= game.tick then
+    --       global.sprites_and_lights[id] = nil
+    --     else
+    --       -- rainbow.tick = game.tick
+    --       local rainbow_color = make_rainbow(rainbow)
+    --       -- if not rainbow_color then return end
+    --       local light = rainbow.light
+    --       local size = rainbow.size
+    --       -- local light_scale = rendering.get_scale(light)
+    --       local light_scale = rainbow.scale
+    --       light_scale = light_scale - light_scale/size
+    --       global.sprites_and_lights[id].scale = light_scale
+    --       -- rendering.set_scale(light, (light_scale - light_scale/size))
+    --       rendering.set_scale(light, light_scale)
+    --       rendering.set_color(light, rainbow_color)
+    --       -- if not rainbow.visible.light then
+    --       --   rendering.set_visible(rainbow.light, true)
+    --       --   global.lights[id].visible.light = true
+    --       -- end
+    --       global.sprites_and_lights[id].size = rainbow.size - 1
+    --     end
+    --   end
     end
   end
   -- game.print("[color=blue]"..table_size(global.sprites).."[/color]    [color=orange]"..table_size(global.lights).."[/color]     [color=red]"..#(rendering.get_all_ids("nyan-engi")).."[/color]")
