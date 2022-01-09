@@ -17,22 +17,6 @@ local pallette = {
   deep = {amplitude = 55, center = 55},
 }
 
--- script.on_nth_tick(60, function(event)
---   if not global.settings then
---     global.settings = {}
---   end
---   for index, player in pairs(game.connected_players) do
---     global.settings[index] = {}
---     local settings = {
---       speed = settings.get_player_settings(index)["nyan-rainbow-speed"].value,
---       sync = settings.get_player_settings(index)["nyan-rainbow-sync"].value,
---       palette = settings.get_player_settings(index)["nyan-rainbow-palette"].value,
---     }
---     global.settings[index] = settings
---   end
---   game.print(serpent.block(global.settings))
--- end)
-
 function make_rainbow(rainbow, game_tick, all_settings)
   local index = rainbow.player_index
   local created_tick = rainbow.tick
@@ -139,76 +123,11 @@ script.on_event(defines.events.on_player_changed_position, function(event)
     local rainbow_color = make_rainbow(light_data, event_tick, all_settings)
     -- local rainbow_color = {1,1,1,1}
     rendering.set_color(light, rainbow_color)
-  -- end
-    -- rendering.bring_to_front(light)
   end
-  -- if not global.rainbows then
-  --   global.rainbows = {}
-  -- end
-  -- if not global.rainbows[player_index] then
-  --   global.rainbows[player_index] = {}
-  -- end
-  -- table.insert(global.rainbows[player_index], {
-  --   sprite = sprite,
-  --   light = light,
-  --   tick_to_die = event.tick + length,
-  --   size = scale * length,
-  --   id = sprite or light,
-  --   tick = event.tick,
-  --   player_index = player_index,
-  --   visible = {sprite = false, light = false}
-  -- })
-
 end)
 
 script.on_event(defines.events.on_tick, function(event)
-  -- if global.rainbows then
-  --   for p, player in pairs(global.rainbows) do
-  --     for r, rainbow in pairs(player) do
-  --       -- if rainbow then
-  --         -- if not (rainbow.sprite or rainbow.light) then
-  --         --   global.rainbows[p][r] = nil
-  --         -- if not (rendering.is_valid(rainbow.sprite) or rendering.is_valid(rainbow.light)) then
-  --         --   rendering.destroy(rainbow.sprite)
-  --         --   rendering.destroy(rainbow.light)
-  --         --   global.rainbows[p][r] = nil
-  --         --   break
-  --         if (rainbow.tick_to_die <= game.tick) then
-  --           -- rendering.set_time_to_live(rainbow.sprite, 1)
-  --           -- rendering.set_time_to_live(rainbow.light, 1)
-  --           -- rendering.destroy(rainbow.sprite)
-  --           -- rendering.destroy(rainbow.light)
-  --           global.rainbows[p][r] = nil
-  --         else
-  --           rainbow.tick = game.tick
-  --           local rainbow_color = make_rainbow(rainbow)
-  --           if not rainbow_color then return end
-  --           if rainbow.light then
-  --             local light_scale = rendering.get_scale(rainbow.light)
-  --             rendering.set_scale(rainbow.light, (light_scale - light_scale/rainbow.size))
-  --             rendering.set_color(rainbow.light, rainbow_color)
-  --             if not rainbow.visible.light then
-  --               rendering.set_visible(rainbow.light, true)
-  --               global.rainbows[p][r].visible.light = true
-  --             end
-  --           end
-  --           if rainbow.sprite then
-  --             local sprite_scale = rendering.get_x_scale(rainbow.sprite)
-  --             rendering.set_x_scale(rainbow.sprite, (sprite_scale - sprite_scale/rainbow.size))
-  --             rendering.set_y_scale(rainbow.sprite, (sprite_scale - sprite_scale/rainbow.size))
-  --             rendering.set_color(rainbow.sprite, rainbow_color)
-  --             if not rainbow.visible.sprite then
-  --               rendering.set_visible(rainbow.sprite, true)
-  --               global.rainbows[p][r].visible.sprite = true
-  --             end
-  --           end
-  --           global.rainbows[p][r].size = rainbow.size - 1
-  --         end
-  --       -- end
-  --     end
-  --     game.print("[color=blue]"..#global.rainbows[p].."[/color]     [color=red]"..#(rendering.get_all_ids("nyan-engi")).."[/color]")
-  --   end
-  -- end
+
   local render_ids = rendering.get_all_ids("nyan-engi")
   if not render_ids then
     return
@@ -217,18 +136,9 @@ script.on_event(defines.events.on_tick, function(event)
   local all_settings = {}
   for _, player in pairs(game.connected_players) do
     local index = player.index
-    -- local player_settings = {
-    --   speed = settings.get_player_settings(index)["nyan-rainbow-speed"].value,
-    --   sync = settings.get_player_settings(index)["nyan-rainbow-sync"].value,
-    --   palette = settings.get_player_settings(index)["nyan-rainbow-palette"].value,
-    -- }
     all_settings[index] = settings.get_player_settings(index)
   end
   for _, id in pairs(render_ids) do
-    -- local rainbow = {}
-    -- if global.sprites and global.sprites[id] then
-    --   rainbow = global.sprites[id]
-    -- end
     local rainbow = global.sprites[id] or global.lights[id]
     if rainbow then
       local sprite = rainbow.sprite
@@ -297,124 +207,3 @@ script.on_event(defines.events.on_tick, function(event)
   end
   -- game.print("[color=blue]"..table_size(global.sprites).."[/color]    [color=orange]"..table_size(global.lights).."[/color]     [color=red]"..#(rendering.get_all_ids("nyan-engi")).."[/color]")
 end)
-
-
-
-
-
-
-
-
-
-
-
-
---
---
--- --[[ and now here's the attempted lamp section of the mod --]]
---
--- if not global.lamps then
---   global.lamps = {}
--- end
---
--- function initialize_lamps()
---   for every, surface in pairs(game.surfaces) do
---     for each, lamp in pairs(surface.find_entities_filtered{type={"lamp"}}) do
---       if not global.lamps then
---         global.lamps = {}
---       end
---       global.lamps[lamp.unit_number] = {
---         entity = lamp,
---         glow = nil,
---       }
---     end
---   end
--- end
---
--- script.on_init(function()
---   initialize_lamps()
--- end)
---
--- script.on_configuration_changed(function()
---   initialize_lamps()
--- end)
---
--- script.on_nth_tick(5, function(event)
---   local frequency = 0.050
---   local rainbow_speed = settings.global["lamp-rainbow-speed"].value
---   if rainbow_speed == "off" then
---     for unit_number, data in pairs(global.lamps) do
---       if data.glow then
---         rendering.destroy(data.glow)
---         data.glow = nil
---       end
---     end
---     return
---   else
---     frequency = speeds[rainbow_speed]
---   end
---   -- game.print(serpent.block(global.lamps))
---   for unit_number, data in pairs(global.lamps) do
---     if data and data.entity and data.entity.valid then
---       if (not data.entity.get_control_behavior() and data.entity.status == 1) then
---         local id = data.entity.unit_number
---         local nth_tick = event.nth_tick
---         local tick = event.tick
---         if settings.global["lamp-rainbow-sync"].value == true then
---           id = 0
---         end
---         local rainbow = {
---           r = math.sin(frequency*((tick/nth_tick)+(id*10))+(0*math.pi/3))*127+128,
---           g = math.sin(frequency*((tick/nth_tick)+(id*10))+(2*math.pi/3))*127+128,
---           b = math.sin(frequency*((tick/nth_tick)+(id*10))+(4*math.pi/3))*127+128,
---           a = pallette[settings.global["lamp-rainbow-palette"].value],
---         }
---         -- rainbow.a = 0.1
---         if not data.glow then
---           data.glow = rendering.draw_sprite{
---             sprite = "utility/light_medium",
---             color = rainbow,
---             target = data.entity,
---             surface = data.entity.surface,
---             -- intensity = 0.25,
---             -- scale = 1,
---             x_scale = 2,
---             y_scale = 2,
---             render_layer = "light-effect",
---             -- render_mode = "subtractive",
---             -- glow_size = 6,
---             -- glow_color_intensity = 1,
---             -- glow_render_mode = "additive",
---           }
---           rendering.bring_to_front(data.glow)
---         else
---           rendering.set_color(data.glow, rainbow)
---         end
---       else
---         if data.glow then
---           rendering.destroy(data.glow)
---           data.glow = nil
---         end
---       end
---     else
---       global.lamps[unit_number] = nil
---     end
---   end
--- end
--- )
---
--- function on_built(event)
---   local entity = event.created_entity or event.entity or event.destination
---   if entity.type == "lamp" then
---     global.lamps[entity.unit_number] = {
---       entity = entity,
---       glow = nil,
---     }
---   end
--- end
---
--- script.on_event(defines.events.on_built_entity, on_built)
--- script.on_event(defines.events.on_entity_cloned, on_built)
--- script.on_event(defines.events.on_robot_built_entity, on_built)
--- script.on_event(defines.events.script_raised_built, on_built)
--- script.on_event(defines.events.script_raised_revive, on_built)
