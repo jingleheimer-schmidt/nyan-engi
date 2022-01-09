@@ -48,8 +48,9 @@ local function initialize_settings()
   if not global.settings then
     global.settings = {}
   end
-  for index, player in pairs(game.players) do
-    local player_settings = settings.get_player_settings(player.index)
+  for _, player in pairs(game.players) do
+    local index = player.index
+    local player_settings = settings.get_player_settings(index)
     global.settings[index] = {}
     global.settings[index]["nyan-rainbow-glow"] = player_settings["nyan-rainbow-glow"].value
     global.settings[index]["nyan-rainbow-color"] = player_settings["nyan-rainbow-color"].value
@@ -59,10 +60,17 @@ local function initialize_settings()
     global.settings[index]["nyan-rainbow-sync"] = player_settings["nyan-rainbow-sync"].value
     global.settings[index]["nyan-rainbow-palette"] = player_settings["nyan-rainbow-palette"].value
   end
-  game.print(serpent.block(global.settings))
 end
 
 script.on_init(function()
+  initialize_settings()
+end)
+
+script.on_event(defines.events.on_player_created, function()
+  initialize_settings()
+end)
+
+script.on_event(defines.events.on_player_joined_game, function()
   initialize_settings()
 end)
 
@@ -71,6 +79,7 @@ script.on_configuration_changed(function()
 end)
 
 script.on_event(defines.events.on_player_changed_position, function(event)
+  if event.tick < 1 then return end
   local player_index = event.player_index
   local settings = global.settings
   local player_settings = settings[player_index]
@@ -114,7 +123,7 @@ script.on_event(defines.events.on_player_changed_position, function(event)
       sprite = "nyan",
       target = player.position,
       surface = player.surface,
-      intensity = .123,
+      intensity = .175,
       scale = scale * 2,
       render_layer = "light-effect",
       time_to_live = length,
