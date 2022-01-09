@@ -72,8 +72,8 @@ script.on_event(defines.events.on_player_changed_position, function(event)
       -- visible = false,
       time_to_live = length,
     }
-    if not global.sprites_and_lights then
-      global.sprites_and_lights = {}
+    if not global.sprites then
+      global.sprites = {}
     end
     local sprite_data = {
       sprite = sprite,
@@ -83,10 +83,9 @@ script.on_event(defines.events.on_player_changed_position, function(event)
       tick = event.tick,
       player_index = player_index,
       scale = scale,
-      -- type = "sprite",
       -- visible = {sprite = false, light = false}
     }
-    global.sprites_and_lights[sprite] = sprite_data
+    global.sprites[sprite] = sprite_data
     local rainbow_color = make_rainbow(sprite_data)
     rendering.set_color(sprite, rainbow_color)
     -- rendering.bring_to_front(sprite)
@@ -103,8 +102,8 @@ script.on_event(defines.events.on_player_changed_position, function(event)
       -- visible = false,
       time_to_live = length,
     }
-    if not global.sprites_and_lights then
-      global.sprites_and_lights = {}
+    if not global.lights then
+      global.lights = {}
     end
     local light_data = {
       light = light,
@@ -114,12 +113,12 @@ script.on_event(defines.events.on_player_changed_position, function(event)
       tick = event.tick,
       player_index = player_index,
       scale = scale * 1.5,
-      -- type = "light",
       -- visible = {sprite = false, light = false}
     }
-    global.sprites_and_lights[light] = light_data
+    global.lights[light] = light_data
     local rainbow_color = make_rainbow(light_data)
     rendering.set_color(light, rainbow_color)
+  -- end
     -- rendering.bring_to_front(light)
   end
   -- if not global.rainbows then
@@ -138,6 +137,7 @@ script.on_event(defines.events.on_player_changed_position, function(event)
   --   player_index = player_index,
   --   visible = {sprite = false, light = false}
   -- })
+
 end)
 
 script.on_event(defines.events.on_tick, function()
@@ -194,41 +194,46 @@ script.on_event(defines.events.on_tick, function()
     -- if global.sprites and global.sprites[id] then
     --   rainbow = global.sprites[id]
     -- end
-    local rainbow = global.sprites_and_lights[id]
+    local rainbow = global.sprites[id] or global.lights[id]
     if rainbow then
+      local sprite = rainbow.sprite
+      local light = rainbow.light
       if rainbow.tick_to_die <= game.tick then
-        global.sprites_and_lights[id] = nil
+        if sprite then
+          global.sprites[id] = nil
+        elseif light then
+          global.lights[id] = nil
+        end
       else
-        -- rainbow.tick = game.tick
         local rainbow_color = make_rainbow(rainbow)
-        -- if not rainbow_color then return end
-        local sprite_or_light = rainbow.sprite or rainbow.light
-        local light = rainbow.light
         local size = rainbow.size
         -- local sprite_scale = rendering.get_x_scale(sprite)
         local scale = rainbow.scale
         scale = scale - scale / size
-        global.sprites_and_lights[id].scale = scale
         -- rendering.set_x_scale(sprite, (sprite_scale - sprite_scale / size))
         -- rendering.set_y_scale(sprite, (sprite_scale - sprite_scale / size))
-        if rainbow.sprite then
-          rendering.set_x_scale(sprite_or_light, scale)
-          rendering.set_y_scale(sprite_or_light, scale)
-          rendering.set_color(sprite_or_light, rainbow_color)
-        elseif rainbow.light then
-          rendering.set_scale(sprite_or_light, scale)
-          rendering.set_color(sprite_or_light, rainbow_color)
+        if sprite then
+          rendering.set_x_scale(sprite, scale)
+          rendering.set_y_scale(sprite, scale)
+          rendering.set_color(sprite, rainbow_color)
+          global.sprites[id].scale = scale
+          global.sprites[id].size = rainbow.size - 1
+        elseif light then
+          rendering.set_scale(light, scale)
+          rendering.set_color(light, rainbow_color)
+          global.lights[id].scale = scale
+          global.lights[id].size = rainbow.size - 1
         end
         -- if not rainbow.visible.sprite then
         --   rendering.set_visible(rainbow.sprite, true)
         --   global.sprites[id].visible.sprite = true
         -- end
-        global.sprites_and_lights[id].size = rainbow.size - 1
+        -- global.sprites[id].size = rainbow.size - 1
       end
-    -- else rainbow = global.sprites_and_lights[id]
+    -- else rainbow = global.lights[id]
     --   if rainbow then
     --     if rainbow.tick_to_die <= game.tick then
-    --       global.sprites_and_lights[id] = nil
+    --       global.lights[id] = nil
     --     else
     --       -- rainbow.tick = game.tick
     --       local rainbow_color = make_rainbow(rainbow)
@@ -238,15 +243,15 @@ script.on_event(defines.events.on_tick, function()
     --       -- local light_scale = rendering.get_scale(light)
     --       local light_scale = rainbow.scale
     --       light_scale = light_scale - light_scale/size
-    --       global.sprites_and_lights[id].scale = light_scale
+    --       global.lights[id].scale = light_scale
     --       -- rendering.set_scale(light, (light_scale - light_scale/size))
-    --       rendering.set_scale(light, light_scale)
-    --       rendering.set_color(light, rainbow_color)
+    --       rendering.set_scale(light, scale)
+    --       rendering.set_color(light, scale)
     --       -- if not rainbow.visible.light then
     --       --   rendering.set_visible(rainbow.light, true)
     --       --   global.lights[id].visible.light = true
     --       -- end
-    --       global.sprites_and_lights[id].size = rainbow.size - 1
+    --       global.lights[id].size = rainbow.size - 1
     --     end
     --   end
     end
