@@ -17,24 +17,39 @@ local pallette = {
   deep = {amplitude = 55, center = 55},
 }
 
-function make_rainbow(rainbow)
+-- script.on_nth_tick(60, function(event)
+--   if not global.settings then
+--     global.settings = {}
+--   end
+--   for index, player in pairs(game.connected_players) do
+--     global.settings[index] = {}
+--     local settings = {
+--       speed = settings.get_player_settings(index)["nyan-rainbow-speed"].value,
+--       sync = settings.get_player_settings(index)["nyan-rainbow-sync"].value,
+--       palette = settings.get_player_settings(index)["nyan-rainbow-palette"].value,
+--     }
+--     global.settings[index] = settings
+--   end
+--   game.print(serpent.block(global.settings))
+-- end)
+
+function make_rainbow(rainbow, game_tick, all_settings)
   local index = rainbow.player_index
-  -- local uuid = rainbow.id or 1
   local created_tick = rainbow.tick
-  local game_tick = game.tick
-  local frequency = 0.050
-  local rainbow_speed = settings.get_player_settings(index)["nyan-rainbow-speed"].value
-  -- if rainbow_speed == "off" then
-  --   return false
-  -- else
-    frequency = speeds[rainbow_speed]
-  -- end
-  if settings.get_player_settings(index)["nyan-rainbow-sync"].value == true then
+  -- local game_tick = game.tick
+  local player_settings = all_settings[index]
+  local frequency = speeds[player_settings["nyan-rainbow-speed"].value]
+  -- local frequency = 0.050
+  if player_settings["nyan-rainbow-sync"].value == true then
     created_tick = index
   end
-  local pi_3 = math.pi/3
+  -- if false == true then
+  --   created_tick = index
+  -- end
+  local pi_3 = 1.0471975512 --[[or math.pi/3]]
   local modifier = (game_tick)+(index*created_tick)
-  local palette_key = settings.get_player_settings(index)["nyan-rainbow-palette"].value
+  local palette_key = player_settings["nyan-rainbow-palette"].value
+  -- local palette_key = "default"
   local amplitude = pallette[palette_key].amplitude
   local center = pallette[palette_key].center
   -- local rainbow_color = {
@@ -50,16 +65,20 @@ end
 
 script.on_event(defines.events.on_player_changed_position, function(event)
   local player_index = event.player_index
-  local sprite = settings.get_player_settings(player_index)["nyan-rainbow-color"].value
-  local light = settings.get_player_settings(player_index)["nyan-rainbow-glow"].value
+  local all_settings = {}
+  all_settings[player_index] = settings.get_player_settings(player_index)
+  local player_settings = all_settings[player_index]
+  local sprite = player_settings["nyan-rainbow-color"].value
+  local light = player_settings["nyan-rainbow-glow"].value
   local player = {}
   if sprite or light then
     player = game.get_player(player_index)
   else
     return
   end
-  local length = tonumber(settings.get_player_settings(player_index)["nyan-rainbow-length"].value)
-  local scale = tonumber(settings.get_player_settings(player_index)["nyan-rainbow-scale"].value)
+  local event_tick = event.tick
+  local length = tonumber(player_settings["nyan-rainbow-length"].value)
+  local scale = tonumber(player_settings["nyan-rainbow-scale"].value)
   if sprite then
     sprite = rendering.draw_sprite{
       sprite = "nyan",
@@ -77,16 +96,16 @@ script.on_event(defines.events.on_player_changed_position, function(event)
     end
     local sprite_data = {
       sprite = sprite,
-      tick_to_die = event.tick + length,
+      tick_to_die = event_tick + length,
       size = scale * length,
       -- id = sprite or light,
-      tick = event.tick,
+      tick = event_tick,
       player_index = player_index,
       -- scale = scale,
       -- visible = {sprite = false, light = false}
     }
     global.sprites[sprite] = sprite_data
-    local rainbow_color = make_rainbow(sprite_data)
+    local rainbow_color = make_rainbow(sprite_data, event_tick, all_settings)
     -- local rainbow_color = {1,1,1,1}
     rendering.set_color(sprite, rainbow_color)
     -- rendering.bring_to_front(sprite)
@@ -108,16 +127,16 @@ script.on_event(defines.events.on_player_changed_position, function(event)
     end
     local light_data = {
       light = light,
-      tick_to_die = event.tick + length,
+      tick_to_die = event_tick + length,
       size = scale * length,
       -- id = sprite or light,
-      tick = event.tick,
+      tick = event_tick,
       player_index = player_index,
       -- scale = scale * 1.5,
       -- visible = {sprite = false, light = false}
     }
     global.lights[light] = light_data
-    local rainbow_color = make_rainbow(light_data)
+    local rainbow_color = make_rainbow(light_data, event_tick, all_settings)
     -- local rainbow_color = {1,1,1,1}
     rendering.set_color(light, rainbow_color)
   -- end
@@ -142,7 +161,7 @@ script.on_event(defines.events.on_player_changed_position, function(event)
 
 end)
 
-script.on_event(defines.events.on_tick, function()
+script.on_event(defines.events.on_tick, function(event)
   -- if global.rainbows then
   --   for p, player in pairs(global.rainbows) do
   --     for r, rainbow in pairs(player) do
@@ -190,8 +209,22 @@ script.on_event(defines.events.on_tick, function()
   --     game.print("[color=blue]"..#global.rainbows[p].."[/color]     [color=red]"..#(rendering.get_all_ids("nyan-engi")).."[/color]")
   --   end
   -- end
-
-  for _, id in pairs(rendering.get_all_ids("nyan-engi")) do
+  local render_ids = rendering.get_all_ids("nyan-engi")
+  if not render_ids then
+    return
+  end
+  local game_tick = event.tick
+  local all_settings = {}
+  for _, player in pairs(game.connected_players) do
+    local index = player.index
+    -- local player_settings = {
+    --   speed = settings.get_player_settings(index)["nyan-rainbow-speed"].value,
+    --   sync = settings.get_player_settings(index)["nyan-rainbow-sync"].value,
+    --   palette = settings.get_player_settings(index)["nyan-rainbow-palette"].value,
+    -- }
+    all_settings[index] = settings.get_player_settings(index)
+  end
+  for _, id in pairs(render_ids) do
     -- local rainbow = {}
     -- if global.sprites and global.sprites[id] then
     --   rainbow = global.sprites[id]
@@ -200,14 +233,14 @@ script.on_event(defines.events.on_tick, function()
     if rainbow then
       local sprite = rainbow.sprite
       local light = rainbow.light
-      if rainbow.tick_to_die <= game.tick then
+      if rainbow.tick_to_die <= game_tick then
         if sprite then
           global.sprites[id] = nil
         elseif light then
           global.lights[id] = nil
         end
       else
-        local rainbow_color = make_rainbow(rainbow)
+        local rainbow_color = make_rainbow(rainbow, game_tick, all_settings)
         -- local rainbow_color = {1,1,1,1}
         -- local size = rainbow.size
         -- local scale = rainbow.scale
