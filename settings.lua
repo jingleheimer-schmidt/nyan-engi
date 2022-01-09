@@ -19,8 +19,8 @@ local rainbowPaletteSetting = {
   setting_type = "runtime-per-user",
   default_value = "default",
   allowed_values = {
-    "pastel",
     "light",
+    "pastel",
     "default",
     "vibrant",
     "deep"
