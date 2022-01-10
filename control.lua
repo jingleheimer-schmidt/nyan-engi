@@ -67,7 +67,6 @@ script.on_event(defines.events.on_player_changed_position, function(event)
   if not (global.settings and global.settings[player_index]) then
     initialize_settings(player_index)
   end
-  -- local settings = global.settings
   local player_settings = global.settings[player_index]
   local sprite = player_settings["nyan-rainbow-color"]
   local light = player_settings["nyan-rainbow-glow"]
@@ -131,7 +130,6 @@ script.on_event(defines.events.on_player_changed_position, function(event)
 end)
 
 script.on_event(defines.events.on_tick, function(event)
-
   local render_ids = rendering.get_all_ids("nyan-engi")
   if not render_ids then
     return
@@ -141,19 +139,15 @@ script.on_event(defines.events.on_tick, function(event)
   for _, id in pairs(render_ids) do
     local rainbow = global.sprites[id] or global.lights[id]
     if rainbow then
-      local sprite = rainbow.sprite
-      local light = rainbow.light
       if rainbow.tick_to_die <= game_tick then
-        if sprite then
           global.sprites[id] = nil
-        elseif light then
           global.lights[id] = nil
-        end
       else
+        local sprite = rainbow.sprite
+        local light = rainbow.light
         local player_settings = settings[rainbow.player_index]
         local rainbow_color = make_rainbow(rainbow, game_tick, player_settings)
         local size = rainbow.size
-        -- local scale = rainbow.scale
         if sprite then
           if player_settings["nyan-rainbow-taper"] then
             local scale = rendering.get_x_scale(sprite)
@@ -162,8 +156,6 @@ script.on_event(defines.events.on_tick, function(event)
             rendering.set_y_scale(sprite, scale)
           end
           rendering.set_color(sprite, rainbow_color)
-          -- global.sprites[id].scale = scale
-          -- global.sprites[id].size = rainbow.size - 1
         elseif light then
           if player_settings["nyan-rainbow-taper"] then
             local scale = rendering.get_scale(light)
@@ -171,12 +163,8 @@ script.on_event(defines.events.on_tick, function(event)
             rendering.set_scale(light, scale)
           end
           rendering.set_color(light, rainbow_color)
-          -- global.lights[id].scale = scale
-          -- global.lights[id].size = rainbow.size - 1
         end
       end
     end
   end
-  -- game.print(#render_ids)
-  -- game.print("[color=blue]"..table_size(global.sprites).."[/color]    [color=orange]"..table_size(global.lights).."[/color]     [color=red]"..#(rendering.get_all_ids("nyan-engi")).."[/color]")
 end)
