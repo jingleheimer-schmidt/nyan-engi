@@ -41,32 +41,25 @@ end
 script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
   local player_index = event.player_index
   local setting_name = event.setting
-  if not (global.settings or global.settings[player_index]) then
-    initialize_settings()
+  if not (global.settings and global.settings[player_index]) then
+    initialize_settings(player_index)
   end
   global.settings[player_index][setting_name] = settings.get_player_settings(player_index)[setting_name].value
 end)
 
-local function initialize_settings()
+local function initialize_settings(index)
   if not global.settings then
     global.settings = {}
-    -- log(serpent.block(global.settings))
   end
-  -- log(serpent.block(game.players))
-  for _, player in pairs(game.players) do
-    -- log("player: "..player.name)
-    local index = player.index
-    local player_settings = settings.get_player_settings(index)
-    global.settings[index] = {}
-    global.settings[index]["nyan-rainbow-glow"] = player_settings["nyan-rainbow-glow"].value
-    global.settings[index]["nyan-rainbow-color"] = player_settings["nyan-rainbow-color"].value
-    global.settings[index]["nyan-rainbow-length"] = player_settings["nyan-rainbow-length"].value
-    global.settings[index]["nyan-rainbow-scale"] = player_settings["nyan-rainbow-scale"].value
-    global.settings[index]["nyan-rainbow-speed"] = player_settings["nyan-rainbow-speed"].value
-    global.settings[index]["nyan-rainbow-sync"] = player_settings["nyan-rainbow-sync"].value
-    global.settings[index]["nyan-rainbow-palette"] = player_settings["nyan-rainbow-palette"].value
-  end
-  -- log(serpent.block(global.settings))
+  local player_settings = settings.get_player_settings(index)
+  global.settings[index] = {}
+  global.settings[index]["nyan-rainbow-glow"] = player_settings["nyan-rainbow-glow"].value
+  global.settings[index]["nyan-rainbow-color"] = player_settings["nyan-rainbow-color"].value
+  global.settings[index]["nyan-rainbow-length"] = player_settings["nyan-rainbow-length"].value
+  global.settings[index]["nyan-rainbow-scale"] = player_settings["nyan-rainbow-scale"].value
+  global.settings[index]["nyan-rainbow-speed"] = player_settings["nyan-rainbow-speed"].value
+  global.settings[index]["nyan-rainbow-sync"] = player_settings["nyan-rainbow-sync"].value
+  global.settings[index]["nyan-rainbow-palette"] = player_settings["nyan-rainbow-palette"].value
 end
 --
 -- script.on_init(function()
@@ -91,8 +84,8 @@ end
 
 script.on_event(defines.events.on_player_changed_position, function(event)
   local player_index = event.player_index
-  if not (global.settings or global.settings[player_index]) then
-    initialize_settings()
+  if not (global.settings and global.settings[player_index]) then
+    initialize_settings(player_index)
   end
   -- if event.tick < 1 then return end
   local settings = global.settings
