@@ -25,15 +25,15 @@ function make_rainbow(rainbow, game_tick, settings)
   if player_settings["nyan-rainbow-sync"] == true then
     created_tick = index
   end
-  local pi_3 = math.pi/3
+  local pi_div_3 = 1.0471975511965977461542144610931676280657231331250352736583148641
   local modifier = (game_tick)+(index*created_tick)
   local palette_key = player_settings["nyan-rainbow-palette"]
   local amplitude = palette[palette_key].amplitude
   local center = palette[palette_key].center
   return {
-    r = math.sin(frequency*(modifier)+(0*pi_3))*amplitude+center,
-    g = math.sin(frequency*(modifier)+(2*pi_3))*amplitude+center,
-    b = math.sin(frequency*(modifier)+(4*pi_3))*amplitude+center,
+    r = math.sin(frequency*(modifier)+(0*pi_div_3))*amplitude+center,
+    g = math.sin(frequency*(modifier)+(2*pi_div_3))*amplitude+center,
+    b = math.sin(frequency*(modifier)+(4*pi_div_3))*amplitude+center,
     a = 255,
   }
 end
@@ -41,14 +41,20 @@ end
 script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
   local player_index = event.player_index
   local setting_name = event.setting
+  if not (global.settings or global.settings[player_index]) then
+    initialize_settings()
+  end
   global.settings[player_index][setting_name] = settings.get_player_settings(player_index)[setting_name].value
 end)
 
 local function initialize_settings()
   if not global.settings then
     global.settings = {}
+    -- log(serpent.block(global.settings))
   end
+  -- log(serpent.block(game.players))
   for _, player in pairs(game.players) do
+    -- log("player: "..player.name)
     local index = player.index
     local player_settings = settings.get_player_settings(index)
     global.settings[index] = {}
@@ -60,27 +66,35 @@ local function initialize_settings()
     global.settings[index]["nyan-rainbow-sync"] = player_settings["nyan-rainbow-sync"].value
     global.settings[index]["nyan-rainbow-palette"] = player_settings["nyan-rainbow-palette"].value
   end
+  -- log(serpent.block(global.settings))
 end
-
-script.on_init(function()
-  initialize_settings()
-end)
-
-script.on_event(defines.events.on_player_created, function()
-  initialize_settings()
-end)
-
-script.on_event(defines.events.on_player_joined_game, function()
-  initialize_settings()
-end)
-
-script.on_configuration_changed(function()
-  initialize_settings()
-end)
+--
+-- script.on_init(function()
+--   log("on_init")
+--   -- initialize_settings()
+-- end)
+--
+-- script.on_event(defines.events.on_player_created, function()
+--   log("on_player_created")
+--   initialize_settings()
+-- end)
+--
+-- script.on_event(defines.events.on_player_joined_game, function()
+--   log("on_player_joined_game")
+--   initialize_settings()
+-- end)
+--
+-- script.on_configuration_changed(function()
+--   log("on_configuration_changed")
+--   initialize_settings()
+-- end)
 
 script.on_event(defines.events.on_player_changed_position, function(event)
-  if event.tick < 1 then return end
   local player_index = event.player_index
+  if not (global.settings or global.settings[player_index]) then
+    initialize_settings()
+  end
+  -- if event.tick < 1 then return end
   local settings = global.settings
   local player_settings = settings[player_index]
   local sprite = player_settings["nyan-rainbow-color"]
