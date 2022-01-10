@@ -86,14 +86,14 @@ local rainbowGlowSetting = {
   type = "bool-setting",
   name = "nyan-rainbow-glow",
   setting_type = "runtime-per-user",
-  order = "a",
+  order = "b",
   default_value = true
 }
 local rainbowColorSetting = {
   type = "bool-setting",
   name = "nyan-rainbow-color",
   setting_type = "runtime-per-user",
-  order = "b",
+  order = "a",
   default_value = true
 }
 
