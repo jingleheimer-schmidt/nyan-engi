@@ -1,5 +1,7 @@
 
-require "util"
+--[[
+Nyan Engi control script © 2022 by asher_sky is licensed under Attribution-NonCommercial-ShareAlike 4.0 International. See LICENSE.txt for additional information
+--]]
 
 local speeds = {
   veryslow = 0.010,
@@ -10,42 +12,35 @@ local speeds = {
 }
 
 local palette = {
-  light = {amplitude = 8, center = 246},            -- light
+  light = {amplitude = 15, center = 240},           -- light
   pastel = {amplitude = 55, center = 200},          -- pastel <3
   default = {amplitude = 127.5, center = 127.5},    -- default (nyan)
   vibrant = {amplitude = 50, center = 100},         -- muted
   deep = {amplitude = 25, center = 50},             -- dark
 }
 
-function make_rainbow(rainbow, game_tick, settings)
+local sin = math.sin
+local pi_div_3 = math.pi / 3
+
+function make_rainbow(rainbow, game_tick, player_settings)
   local index = rainbow.player_index
   local created_tick = rainbow.tick
-  local player_settings = settings[index]
+  -- local player_settings = settings[index]
   local frequency = speeds[player_settings["nyan-rainbow-speed"]]
   if player_settings["nyan-rainbow-sync"] == true then
     created_tick = index
   end
-  local pi_div_3 = 1.0471975511965977461542144610931676280657231331250352736583148641
   local modifier = (game_tick)+(index*created_tick)
   local palette_key = player_settings["nyan-rainbow-palette"]
   local amplitude = palette[palette_key].amplitude
   local center = palette[palette_key].center
   return {
-    r = math.sin(frequency*(modifier)+(0*pi_div_3))*amplitude+center,
-    g = math.sin(frequency*(modifier)+(2*pi_div_3))*amplitude+center,
-    b = math.sin(frequency*(modifier)+(4*pi_div_3))*amplitude+center,
+    r = sin(frequency*(modifier)+(0*pi_div_3))*amplitude+center,
+    g = sin(frequency*(modifier)+(2*pi_div_3))*amplitude+center,
+    b = sin(frequency*(modifier)+(4*pi_div_3))*amplitude+center,
     a = 255,
   }
 end
-
-script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
-  local player_index = event.player_index
-  local setting_name = event.setting
-  if not (global.settings and global.settings[player_index]) then
-    initialize_settings(player_index)
-  end
-  global.settings[player_index][setting_name] = settings.get_player_settings(player_index)[setting_name].value
-end)
 
 local function initialize_settings(index)
   if not global.settings then
@@ -60,36 +55,20 @@ local function initialize_settings(index)
   global.settings[index]["nyan-rainbow-speed"] = player_settings["nyan-rainbow-speed"].value
   global.settings[index]["nyan-rainbow-sync"] = player_settings["nyan-rainbow-sync"].value
   global.settings[index]["nyan-rainbow-palette"] = player_settings["nyan-rainbow-palette"].value
+  global.settings[index]["nyan-rainbow-taper"] = player_settings["nyan-rainbow-taper"].value
 end
---
--- script.on_init(function()
---   log("on_init")
---   -- initialize_settings()
--- end)
---
--- script.on_event(defines.events.on_player_created, function()
---   log("on_player_created")
---   initialize_settings()
--- end)
---
--- script.on_event(defines.events.on_player_joined_game, function()
---   log("on_player_joined_game")
---   initialize_settings()
--- end)
---
--- script.on_configuration_changed(function()
---   log("on_configuration_changed")
---   initialize_settings()
--- end)
+
+script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
+  initialize_settings(event.player_index)
+end)
 
 script.on_event(defines.events.on_player_changed_position, function(event)
   local player_index = event.player_index
   if not (global.settings and global.settings[player_index]) then
     initialize_settings(player_index)
   end
-  -- if event.tick < 1 then return end
-  local settings = global.settings
-  local player_settings = settings[player_index]
+  -- local settings = global.settings
+  local player_settings = global.settings[player_index]
   local sprite = player_settings["nyan-rainbow-color"]
   local light = player_settings["nyan-rainbow-glow"]
   local player = {}
@@ -122,7 +101,7 @@ script.on_event(defines.events.on_player_changed_position, function(event)
       player_index = player_index,
     }
     global.sprites[sprite] = sprite_data
-    local rainbow_color = make_rainbow(sprite_data, event_tick, settings)
+    local rainbow_color = make_rainbow(sprite_data, event_tick, player_settings)
     rendering.set_color(sprite, rainbow_color)
   end
   if light then
@@ -146,7 +125,7 @@ script.on_event(defines.events.on_player_changed_position, function(event)
       player_index = player_index,
     }
     global.lights[light] = light_data
-    local rainbow_color = make_rainbow(light_data, event_tick, settings)
+    local rainbow_color = make_rainbow(light_data, event_tick, player_settings)
     rendering.set_color(light, rainbow_color)
   end
 end)
@@ -171,21 +150,26 @@ script.on_event(defines.events.on_tick, function(event)
           global.lights[id] = nil
         end
       else
-        local rainbow_color = make_rainbow(rainbow, game_tick, settings)
+        local player_settings = settings[rainbow.player_index]
+        local rainbow_color = make_rainbow(rainbow, game_tick, player_settings)
         local size = rainbow.size
         -- local scale = rainbow.scale
         if sprite then
-          local scale = rendering.get_x_scale(sprite)
-          scale = scale - scale / size
-          rendering.set_x_scale(sprite, scale)
-          rendering.set_y_scale(sprite, scale)
+          if player_settings["nyan-rainbow-taper"] then
+            local scale = rendering.get_x_scale(sprite)
+            scale = scale - scale / size
+            rendering.set_x_scale(sprite, scale)
+            rendering.set_y_scale(sprite, scale)
+          end
           rendering.set_color(sprite, rainbow_color)
           -- global.sprites[id].scale = scale
           -- global.sprites[id].size = rainbow.size - 1
         elseif light then
-          local scale = rendering.get_scale(light)
-          scale = scale - scale / size
-          rendering.set_scale(light, scale)
+          if player_settings["nyan-rainbow-taper"] then
+            local scale = rendering.get_scale(light)
+            scale = scale - scale / size
+            rendering.set_scale(light, scale)
+          end
           rendering.set_color(light, rainbow_color)
           -- global.lights[id].scale = scale
           -- global.lights[id].size = rainbow.size - 1
@@ -193,5 +177,6 @@ script.on_event(defines.events.on_tick, function(event)
       end
     end
   end
+  -- game.print(#render_ids)
   -- game.print("[color=blue]"..table_size(global.sprites).."[/color]    [color=orange]"..table_size(global.lights).."[/color]     [color=red]"..#(rendering.get_all_ids("nyan-engi")).."[/color]")
 end)
